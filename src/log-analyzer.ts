@@ -1,5 +1,7 @@
 import { CopilotClient, CopilotSession } from "@github/copilot-sdk";
 import { existsSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 export interface LogAnalysisResult {
   patterns: string[];
@@ -8,12 +10,40 @@ export interface LogAnalysisResult {
   summary: string;
 }
 
+/**
+ * Resolves the path to the copilot CLI binary.
+ * This ensures we use an absolute path which works correctly on all platforms,
+ * including Windows where the default "copilot" command may not be found.
+ */
+function resolveCopilotCliPath(): string {
+  try {
+    // Locate the @github/copilot-sdk package, then navigate to the sibling @github/copilot package
+    const copilotSdkPath = import.meta.resolve("@github/copilot-sdk");
+    const sdkDir = dirname(fileURLToPath(copilotSdkPath));
+    // Navigate from sdk/dist to @github/copilot/npm-loader.js
+    const cliPath = join(sdkDir, "..", "..", "copilot", "npm-loader.js");
+
+    if (!existsSync(cliPath)) {
+      throw new Error(`Copilot CLI not found at expected path: ${cliPath}`);
+    }
+
+    return cliPath;
+  } catch (error) {
+    throw new Error(
+      `Failed to resolve Copilot CLI path: ${error instanceof Error ? error.message : String(error)}. ` +
+        "Ensure @github/copilot is installed as a dependency."
+    );
+  }
+}
+
 export class LogAnalyzer {
   private client: CopilotClient;
   private session: CopilotSession | null = null;
 
   constructor() {
-    this.client = new CopilotClient();
+    this.client = new CopilotClient({
+      cliPath: resolveCopilotCliPath(),
+    });
   }
 
   /**
