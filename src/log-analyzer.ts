@@ -1,5 +1,4 @@
 import { CopilotClient, CopilotSession } from "@github/copilot-sdk";
-import { readFile } from "fs/promises";
 import { existsSync } from "fs";
 
 export interface LogAnalysisResult {

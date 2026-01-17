@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import { LogAnalyzer } from "./log-analyzer.js";
-import { readFile } from "fs/promises";
+import { LogAnalyzer, LogAnalysisResult } from "./log-analyzer.js";
 import { resolve } from "path";
 
 interface CliOptions {
@@ -47,7 +46,7 @@ function parseArgs(): CliOptions {
   return options;
 }
 
-function printResults(result: any) {
+function printResults(result: LogAnalysisResult) {
   console.log("\n" + "=".repeat(80));
   console.log("LOG ANALYSIS RESULTS");
   console.log("=".repeat(80));
