@@ -1,0 +1,35 @@
+{
+  "name": "log-analyzer",
+  "version": "1.0.0",
+  "description": "A log analyzer that parses massive log files, identifies patterns, anomalies, and root causes using GitHub Copilot SDK",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "log-analyzer": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/cli.ts",
+    "analyze": "npm run build && node dist/cli.js"
+  },
+  "keywords": [
+    "log-analyzer",
+    "logs",
+    "copilot",
+    "github-copilot",
+    "ai",
+    "pattern-detection",
+    "anomaly-detection"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@github/copilot-sdk": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
