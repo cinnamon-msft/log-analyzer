@@ -182,22 +182,51 @@ Please structure your response in the following format:
 ## SUMMARY
 [Provide a brief summary of the overall health and key findings]`;
 
-    const response = await this.session.sendAndWait({
-      prompt,
-      attachments: [
-        {
-          type: "file",
-          path: logFilePath,
-          displayName: "log-file.log",
-        },
-      ],
+    // Use streaming to get real-time progress updates
+    let fullResponse = "";
+    let charCount = 0;
+
+    const unsubscribe = this.session.on((event) => {
+      if (event.type === "assistant.message_delta") {
+        fullResponse += event.data.deltaContent;
+        charCount += event.data.deltaContent.length;
+        this.emitStreaming(event.data.deltaContent, fullResponse);
+
+        // Emit progress updates based on response length (estimate ~2000 chars for full response)
+        const estimatedProgress = Math.min(90, 10 + Math.round((charCount / 2000) * 80));
+        this.emitProgress({
+          stage: "analyzing",
+          progress: estimatedProgress,
+          message: `AI analyzing log file...`,
+        });
+      } else if (event.type === "assistant.reasoning_delta") {
+        this.emitStreaming(event.data.deltaContent, fullResponse);
+      }
     });
 
-    if (!response || !response.data.content) {
-      throw new Error("No response received from Copilot");
-    }
+    try {
+      const response = await this.session.sendAndWait({
+        prompt,
+        attachments: [
+          {
+            type: "file",
+            path: logFilePath,
+            displayName: "log-file.log",
+          },
+        ],
+      });
 
-    return this.parseAnalysisResponse(response.data.content);
+      unsubscribe();
+
+      if (!response || !response.data.content) {
+        throw new Error("No response received from Copilot");
+      }
+
+      return this.parseAnalysisResponse(response.data.content);
+    } catch (error) {
+      unsubscribe();
+      throw error;
+    }
   }
 
   /**

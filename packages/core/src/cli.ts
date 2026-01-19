@@ -252,6 +252,19 @@ function printIssueSuggestions(suggestions: IssueSuggestion[]) {
     console.log("-".repeat(80));
     console.log(`   📋 ${suggestion.description}`);
     console.log(`   🔍 Search: ${suggestion.searchQuery}`);
+    
+    // Show linked GitHub issues if found
+    if (suggestion.linkedIssues && suggestion.linkedIssues.length > 0) {
+      console.log("   🔗 Related GitHub Issues:");
+      suggestion.linkedIssues.forEach((issue) => {
+        const stateIcon = issue.state === "open" ? "🟢" : "🟣";
+        console.log(`      ${stateIcon} #${issue.number} - ${issue.title}`);
+        console.log(`         ${issue.url}`);
+      });
+    } else {
+      console.log("   ℹ️  No matching GitHub issues found");
+    }
+    
     if (suggestion.potentialSolutions.length > 0) {
       console.log("   💡 Potential solutions:");
       suggestion.potentialSolutions.forEach((sol) => {
