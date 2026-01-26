@@ -8,6 +8,7 @@ import type {
   AnalysisProgress,
 } from "@log-analyzer/shared";
 import { uploadMiddleware } from "../middleware/upload.js";
+import { logError } from "../utils/logger.js";
 
 export const analyzeRouter = Router();
 
@@ -122,15 +123,7 @@ analyzeRouter.post(
       }
 
       // Log error with sanitized information
-      if (process.env.NODE_ENV === "production") {
-        console.error("Analysis error:", {
-          message: error instanceof Error ? error.message : "Unknown error",
-          name: error instanceof Error ? error.name : "Error",
-          timestamp: new Date().toISOString()
-        });
-      } else {
-        console.error("Analysis error:", error);
-      }
+      logError("Analysis error", error);
       
       res.status(500).json({
         success: false,
@@ -329,15 +322,7 @@ analyzeRouter.post(
       }
 
       // Log error with sanitized information
-      if (process.env.NODE_ENV === "production") {
-        console.error("Multi-file analysis error:", {
-          message: error instanceof Error ? error.message : "Unknown error",
-          name: error instanceof Error ? error.name : "Error",
-          timestamp: new Date().toISOString()
-        });
-      } else {
-        console.error("Multi-file analysis error:", error);
-      }
+      logError("Multi-file analysis error", error);
       
       res.status(500).json({
         success: false,
