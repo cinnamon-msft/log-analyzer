@@ -29,7 +29,7 @@ function expandGlobPattern(pattern: string): string[] {
   // Convert glob pattern to regex with proper escaping to prevent ReDoS
   // First escape all special regex characters except * and ?
   const escapedPattern = filePattern
-    .replace(/[.+^${}()|\\[\]]/g, "\\$&");
+    .replace(/[\\.+^${}()|[\]]/g, "\\$&");
   
   // Now safely replace glob wildcards with regex equivalents
   // Use non-greedy matching to prevent catastrophic backtracking
