@@ -9,7 +9,18 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
-  console.error("Server error:", err);
+  // Log error with sanitized information (avoid logging sensitive data like tokens, passwords)
+  if (process.env.NODE_ENV === "production") {
+    // In production, only log error message and type, not full stack trace
+    console.error("Server error:", {
+      message: err.message,
+      name: err.name,
+      timestamp: new Date().toISOString()
+    });
+  } else {
+    // In development, log full error for debugging
+    console.error("Server error:", err);
+  }
 
   // Handle multer errors
   if (err.name === "MulterError") {

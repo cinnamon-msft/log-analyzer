@@ -121,7 +121,17 @@ analyzeRouter.post(
         await suggester.cleanup();
       }
 
-      console.error("Analysis error:", error);
+      // Log error with sanitized information
+      if (process.env.NODE_ENV === "production") {
+        console.error("Analysis error:", {
+          message: error instanceof Error ? error.message : "Unknown error",
+          name: error instanceof Error ? error.name : "Error",
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        console.error("Analysis error:", error);
+      }
+      
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : "Analysis failed",
@@ -318,7 +328,17 @@ analyzeRouter.post(
         await suggester.cleanup();
       }
 
-      console.error("Multi-file analysis error:", error);
+      // Log error with sanitized information
+      if (process.env.NODE_ENV === "production") {
+        console.error("Multi-file analysis error:", {
+          message: error instanceof Error ? error.message : "Unknown error",
+          name: error instanceof Error ? error.name : "Error",
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        console.error("Multi-file analysis error:", error);
+      }
+      
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : "Analysis failed",

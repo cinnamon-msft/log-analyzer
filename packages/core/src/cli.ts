@@ -26,11 +26,17 @@ function expandGlobPattern(pattern: string): string[] {
   const dir = dirname(pattern);
   const filePattern = basename(pattern);
   
-  // Convert glob pattern to regex
-  const regexPattern = filePattern
-    .replace(/\./g, "\\.")
-    .replace(/\*/g, ".*")
-    .replace(/\?/g, ".");
+  // Convert glob pattern to regex with proper escaping to prevent ReDoS
+  // First escape all special regex characters except * and ?
+  const escapedPattern = filePattern
+    .replace(/[.+^${}()|[\]\\]/g, "\\$&");
+  
+  // Now safely replace glob wildcards with regex equivalents
+  // Use non-greedy matching to prevent catastrophic backtracking
+  const regexPattern = escapedPattern
+    .replace(/\*/g, "[^/]*?")  // * matches any characters except path separator (non-greedy)
+    .replace(/\?/g, "[^/]");   // ? matches single character except path separator
+  
   const regex = new RegExp(`^${regexPattern}$`);
   
   try {
