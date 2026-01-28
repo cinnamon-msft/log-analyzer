@@ -52,7 +52,7 @@ export class IssueSuggester {
   async initialize(): Promise<void> {
     await this.client.start();
     this.session = await this.client.createSession({
-      model: "gpt-4o",
+      model: "claude-sonnet-4.5",
     });
   }
 
