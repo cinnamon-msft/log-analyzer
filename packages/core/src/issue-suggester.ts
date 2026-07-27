@@ -1,4 +1,4 @@
-import { CopilotClient, CopilotSession } from "@github/copilot-sdk";
+import { CopilotClient, CopilotSession, approveAll } from "@github/copilot-sdk";
 import { existsSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -52,6 +52,7 @@ export class IssueSuggester {
   async initialize(): Promise<void> {
     await this.client.start();
     this.session = await this.client.createSession({
+      onPermissionRequest: approveAll,
       model: "claude-sonnet-4.5",
     });
   }

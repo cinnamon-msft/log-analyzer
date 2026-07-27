@@ -1,4 +1,4 @@
-import { CopilotClient, CopilotSession } from "@github/copilot-sdk";
+import { CopilotClient, CopilotSession, approveAll } from "@github/copilot-sdk";
 import { createReadStream, existsSync, statSync } from "fs";
 import { readFile } from "fs/promises";
 import { dirname, join, basename } from "path";
@@ -104,6 +104,7 @@ export class LogAnalyzer extends EventEmitter {
   async initialize(): Promise<void> {
     await this.client.start();
     this.session = await this.client.createSession({
+      onPermissionRequest: approveAll,
       model: this.options.model,
     });
   }
