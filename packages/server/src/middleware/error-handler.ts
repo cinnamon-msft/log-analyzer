@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { logError } from "../utils/logger.js";
 
 /**
  * Global error handler middleware
@@ -9,7 +10,8 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
-  console.error("Server error:", err);
+  // Log error with sanitized information (avoid logging sensitive data like tokens, passwords)
+  logError("Server error", err);
 
   // Handle multer errors
   if (err.name === "MulterError") {

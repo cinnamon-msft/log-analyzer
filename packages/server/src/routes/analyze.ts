@@ -8,6 +8,7 @@ import type {
   AnalysisProgress,
 } from "@log-analyzer/shared";
 import { uploadMiddleware } from "../middleware/upload.js";
+import { logError } from "../utils/logger.js";
 
 export const analyzeRouter = Router();
 
@@ -121,7 +122,9 @@ analyzeRouter.post(
         await suggester.cleanup();
       }
 
-      console.error("Analysis error:", error);
+      // Log error with sanitized information
+      logError("Analysis error", error);
+      
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : "Analysis failed",
@@ -318,7 +321,9 @@ analyzeRouter.post(
         await suggester.cleanup();
       }
 
-      console.error("Multi-file analysis error:", error);
+      // Log error with sanitized information
+      logError("Multi-file analysis error", error);
+      
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : "Analysis failed",
